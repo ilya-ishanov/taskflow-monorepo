@@ -1,0 +1,100 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+Icon?
+ehthumbs.db
+Desktop.ini
+
+# Logs / temp
+logs/
+*.log
+*.log.*
+*.out
+*.pid
+hs_err_pid*
+replay_pid*
+tmp/
+temp/
+*.tmp
+
+# Editors swap
+*.swp
+*.swo
+*~
+
+# Java/Maven (на будущее, даже если Gradle)
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Test coverage / reports
+*.exec
+jacoco.exec
+.jacoco/
+coverage/
+
+# Environment / local configs (чтобы секреты не попадали в git)
+.env
+*.env
+.env.*
+*.local
+*.secret
+application-local.yml
+application-local.yaml
+application-*.local.yml
+application-*.local.yaml
+
+# Docker / Compose (локальные данные и override'ы)
+docker-compose.override.yml
+docker/**/data/**
+docker/**/volumes/**
+docker-data/**
+
+# Datastores (dev артефакты Redis и т.п.)
+dump.rdb
+appendonly.aof
+
+# Node / frontend (если вдруг есть рядом)
+node_modules/
+dist/
+build-frontend/
+npm-debug.log*
+yarn-error.log*
