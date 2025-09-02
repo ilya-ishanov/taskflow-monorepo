@@ -1,4 +1,4 @@
-# TaskFlow & NotificationService — продоподобный backend (Spring Boot + Postgres + Mongo + Redis + Kafka + RabbitMQ + Elasticsearch)
+# TaskFlow & NotificationService & EventConsumerService — единый README (локальный запуск + монорепо)
 
 - **TaskFlow** (`server.port=8080`)
   - Postgres: `localhost:5432` БД `taskflow_database`, `user/password`
@@ -12,11 +12,15 @@
   - RabbitMQ: `localhost:5672` (`user/password`)
   - Redis: `localhost:6379`
 
+- **EventConsumerService** (`server.port=8082`)
+  - Kafka: `localhost:9092` (topic `taskflow.events`, consumer group `taskflow-logs-group`)
+  - PostgreSQL: `localhost:5434` БД `event_database`, `user/password`
+
 ---
 
 ## 🧭 Оглавление
 - [Что это](#что-это)
-- [Локальный запуск (быстро, через Docker Compose, монорепо)](#локальный-запуск-быстро-через-docker-compose-монорепо)
+- [Локальный запуск (быстро, через Docker Compose, монорепо)](#локальный-запуск-быстро-через-docker-compose-монорепо)
 - [Альтернатива: запуск инфраструктуры docker run](#альтернатива-запуск-инфраструктуры-docker-run)
 - [Запуск приложений](#запуск-приложений)
 - [Проверка «сквозняка»](#проверка-сквозняка)
@@ -37,12 +41,12 @@
 
 ---
 
-## Локальный запуск (быстро, через Docker Compose, монорепо)
+## Локальный запуск (быстро, через Docker Compose, монорепо)
 > Режим «клонировал → запустил». Поднимает все зависимости одной командой. Совместимо с текущими портами.
 
 1) Возьми файлы из репозитория (лежать рядом с README):
-   - `docker-compose.yml` (если отсутствует — переименуй прилагаемый `docker-compose.monorepo.yml`)
-   - `.env` (если отсутствует — скопируй из `.env.example`)
+  - `compose.yml`
+  - `.env` (если отсутствует — скопируй из `.env.example`)
 2) Подними инфраструктуру:
 ```bash
 docker compose up -d
@@ -53,7 +57,7 @@ docker compose up -d
 ./mvnw -q -DskipTests spring-boot:run -pl notification-service
 ```
 4) Проверка health:
-- TaskFlow: http://localhost:8080/actuator/health  
+- TaskFlow: http://localhost:8080/actuator/health
 - NotificationService: http://localhost:8081/actuator/health
 
 > Остановка: `docker compose down`
@@ -71,6 +75,11 @@ docker run -d --name pg-taskflow -p 5432:5432 \
 # Postgres для NotificationService (5433)
 docker run -d --name pg-notif -p 5433:5432 \
   -e POSTGRES_DB=notification_database -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password \
+  postgres:15
+
+# Postgres для EventConsumerService (5434)
+docker run -d --name pg-event-consumer -p 5434:5432 \
+  -e POSTGRES_DB=event_database -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password \
   postgres:15
 
 # MongoDB (root/password, auth-db=admin)
@@ -131,12 +140,15 @@ curl "http://localhost:9200/task-index/_search?q=Demo"
 
 # 5) Нотификации (если есть REST-эндпоинт)
 curl http://localhost:8081/api/notifications
+
+# 6) Проверить EventConsumerService (по логам или Actuator)
+curl http://localhost:8082/actuator/health
 ```
 
 ---
 
 ## API
-- Swagger UI TaskFlow: <http://localhost:8080/swagger-ui/index.html>  
+- Swagger UI TaskFlow: <http://localhost:8080/swagger-ui/index.html>
 - OpenAPI JSON TaskFlow: <http://localhost:8080/v3/api-docs>
 
 ---
@@ -157,6 +169,11 @@ curl http://localhost:8081/api/notifications
 - PostgreSQL: `jdbc:postgresql://localhost:5433/notification_database` (`user/password`)
 - RabbitMQ: `host=localhost`, `port=5672`, `username=user`, `password=password`
 - Redis: `localhost:6379`
+
+**EventConsumerService:**
+- `server.port=8082`
+- PostgreSQL: `jdbc:postgresql://localhost:5434/event_database` (`user/password`)
+- Kafka: `bootstrap-servers=localhost:9092`, consumer group: `taskflow-logs-group`, topic: `taskflow.events`
 
 ---
 
@@ -182,4 +199,3 @@ curl http://localhost:8081/api/notifications
 - `Address already in use` → 8080/8081/5432/5433 заняты другим процессом.
 
 ---
-
