@@ -1,0 +1,53 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	testImplementation('org.springframework.kafka:spring-kafka-test') {
+		exclude group: 'com.fasterxml.jackson.module', module: 'jackson-module-scala_2.13'
+	}
+	testImplementation 'org.testcontainers:kafka'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.flywaydb:flyway-core:10.15.2'
+	implementation 'org.flywaydb:flyway-database-postgresql:10.15.2'
+	implementation 'org.postgresql:postgresql:42.7.3'
+	testImplementation 'com.h2database:h2'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation "org.springframework.retry:spring-retry"
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
